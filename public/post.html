@@ -1,0 +1,105 @@
+<!-- public/post.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cointab SE-ASSIGNMENT - Post Page</title>
+  <style>
+    /* Add your styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cointab SE-ASSIGNMENT - Post Page</h1>
+  <button id="bulkAddButton" onclick="bulkAddPosts()">Bulk Add</button>
+  <button id="downloadExcelButton" style="display:none;" onclick="downloadExcel()">Download in Excel</button>
+  <h2>User Information</h2>
+    <div id="userinfo"></div>
+  <h2>Posts</h2>
+  <div id="post"></div>
+
+ 
+
+  <script>
+    let CompanyName="xyz";
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId'); 
+    
+    window.onload = function() {
+    // Fetch data using the extracted userId
+    fetchAllData(userId);
+  };
+  async function fetchAllData(userId) {
+    try {
+      const response = await fetch(`/user/${userId}`, { method: 'GET' });
+      const {user, posts} = await response.json();
+        let userinfo=document.getElementById("userinfo");
+        let name=document.createElement("p");
+        name.textContent="Name:"+ user.name;
+        let email=document.createElement("p");
+        email.textContent="Email:"+ user.email;
+        
+        let phone=document.createElement("p");
+        phone.textContent="Phone:"+ user.phone;
+        
+        let web=document.createElement("p");
+        web.textContent="Website:"+ user.web;
+        
+        let city=document.createElement("p");
+        city.textContent="City:"+ user.city;
+        
+        let company=document.createElement("p");
+        company.textContent="Company:"+ user.company;
+        CompanyName=user.company
+                userinfo.append(name,email,phone,phone,web,city,company);
+
+   let post=document.getElementById("post");
+        console.log(posts)
+        posts.forEach(element => {
+            let Title=document.createElement("h3");
+        Title.textContent="Title:  "+element.title
+        ;
+        
+        let body=document.createElement("p");
+        body.textContent="Body:  "+ element.body;
+        let div=document.createElement("div");
+        div.append(Title,body);
+        post.appendChild(div);
+        });
+        console.log(post)
+        
+
+    } catch (error) {
+      console.error('Error fetching posts or adding posts to the database:', error);
+    }
+  }
+
+    async function bulkAddPosts() {
+      try {
+        console.log(CompanyName)
+        const response = await fetch(`/api/addPost/${userId}?company=${CompanyName}`, { method: 'POST' });
+        const result = await response.json();
+
+        if (result.exists) {
+          // Posts already in the database
+          document.getElementById('bulkAddButton').style.display = 'none';
+          document.getElementById('downloadExcelButton').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error adding posts to the database:', error);
+      }
+    }
+
+    function downloadExcel() {
+      window.location.href = `/api/downloadExcel/${userId}?comapany=${CompanyName}`;
+    }
+  </script>
+</body>
+</html>

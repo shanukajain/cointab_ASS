@@ -1,0 +1,73 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cointab SE-ASSIGNMENT</title>
+  <style>
+    /* Add your styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cointab SE-ASSIGNMENT</h1>
+  <button id="allUsersButton" onclick="fetchAllUsers()">All Users</button>
+  <div id="userList"></div>
+
+  <script>
+    async function fetchAllUsers() {
+      try {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+
+        // Display essential user information
+        const userListDiv = document.getElementById('userList');
+        userListDiv.innerHTML = '';
+        users.forEach(user => {
+          const userDiv = document.createElement('div');
+          userDiv.innerHTML = `
+            <p>Name: ${user.name}</p>
+            <p>Email: ${user.email}</p>
+            <p>Phone: ${user.phone}</p>
+            <p>Website: ${user.website}</p>
+            <p>City: ${user.address.city}</p>
+            <p>Company: ${user.company.name}</p>
+            <button onclick="addUser('${user.id}')">Add</button>
+            <button id="openBtn_${user.id}" style="display:none;" onclick="openUser('${user.id}')">Open</button>
+          `;
+          userListDiv.appendChild(userDiv);
+        });
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    }
+
+    async function addUser(userId) {
+      try {
+        const response = await fetch(`/api/addUser/${userId}`, { method: 'POST' });
+        const result = await response.json();
+
+        if (result.exists) {
+          // User already in the database
+          document.getElementById(`openBtn_${userId}`).style.display = 'block';
+          document.querySelector(`[onclick="addUser('${userId}')"]`).style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error adding user to the database:', error);
+      }
+    }
+
+    function openUser(userId,company) {
+      // console.log("userdata")
+      window.location = `./post.html?userId=${userId}&company=${company}`;
+    }
+  </script>
+</body>
+</html>
