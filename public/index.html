@@ -70,14 +70,16 @@
 
     async function addUser(userId) {
       try {
+        document.getElementById(`openBtn_${userId}`).style.display = 'block';
+          document.querySelector(`[onclick="addUser('${userId}')"]`).style.display = 'none';
         const response = await fetch(`/api/addUser/${userId}`, { method: 'POST' });
         const result = await response.json();
 
-        if (result.exists) {
-          // User already in the database
-          document.getElementById(`openBtn_${userId}`).style.display = 'block';
-          document.querySelector(`[onclick="addUser('${userId}')"]`).style.display = 'none';
-        }
+        // if (result.exists) {
+        //   // User already in the database
+        //   document.getElementById(`openBtn_${userId}`).style.display = 'block';
+        //   document.querySelector(`[onclick="addUser('${userId}')"]`).style.display = 'none';
+        // }
       } catch (error) {
         console.error('Error adding user to the database:', error);
       }

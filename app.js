@@ -77,8 +77,8 @@ app.post('/api/addPost/:userId', (req, res) => {
       // Posts already in the database
       res.json({ exists: true });
     } else {
- 
-    fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
+      try {
+        fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
     .then(response => response.json())
     .then(posts => {
       // Insert all posts into the database
@@ -88,6 +88,11 @@ app.post('/api/addPost/:userId', (req, res) => {
 
       res.json({ exists: false });
     })
+      } catch (error) {
+        console.log("error")
+        res.status(500);
+      }
+    
     }
   });
 });
